@@ -1,0 +1,45 @@
+DROP TABLE IF EXISTS netflix_customers;
+
+CREATE TABLE netflix_customers (
+    customer_id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(50),
+    country VARCHAR(50),
+    joining_date DATE DEFAULT NOW(),
+    monthly_revenue INT
+);
+
+INSERT INTO netflix_customers(customer_name, country, monthly_revenue)
+VALUES
+('Aarav Kumar',       'India',        1200),
+('Poojitha Bethu',    'India',        1500),
+('Yewanchu Lemo',     'China',        900),
+('Wang Lee',          'China',        1100),
+('Emma Watson',       'UK',           2000),
+('John Smith',        'USA',          1800),
+('Robert Brown',      'USA',          2200),
+('Sophia Müller',     'Germany',      1700),
+('Luca Rossi',        'Italy',        1300),
+('Chen Mei',          'China',        950),
+('Olivia Davis',      'USA',          2100);
+
+--SELECT * from customers;
+
+SELECT count(customer_id) as total_customers, country from netflix_customers GROUP BY country;
+
+
+SELECT sum(monthly_revenue) as country_revenue, country from netflix_customers
+GROUP BY country;
+
+
+SELECT avg(monthly_revenue),count(customer_id) as total_customers, country from netflix_customers
+GROUP BY country
+having count(customer_id)>2;
+
+SELECT max(monthly_revenue) as total_revenue , country from netflix_customers 
+GROUP BY country
+ORDER BY total_revenue
+ limit 1;
+
+
+
+
