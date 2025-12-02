@@ -1,0 +1,39 @@
+DROP TABLE if EXISTS Customers;
+create table Customers(
+    Customer_Id SERIAL PRIMARY KEY,
+    Customer_Name VARCHAR(50),
+    Customer_Address TEXT,
+    Joining_Date DATE DEFAULT NOW(),
+    Login_Time TIME DEFAULT NOW(),
+    Customer_Salary NUMERIC(10,2)
+);
+INSERT INTO Customers(Customer_Name, Customer_Address, Customer_Salary)
+VALUES('Poojitha Bethu', 'AndraPradesh', 450000.34),
+('Yewanchu Lemo', 'China', 460000.44),
+('Yulong', 'England', 560000.78),
+('YangMieMie', 'UnitedKingdom', 900000.89),
+('ChuChu', 'China', 780000.77);
+--SELECT * FROM Customers;
+
+UPDATE Customers 
+SET Customer_Name='Gwen Mallard', Customer_Address='France' WHERE Customer_Name='Poojitha Bethu';
+-- SELECT * FROM Customers;
+
+ALTER TABLE Customers
+ADD COLUMN Department text;
+SELECT * FROM Customers;
+
+ALTER TABLE Customers
+ALTER COLUMN Customer_Salary TYPE INT;
+
+ALTER TABLE Customers
+RENAME COLUMN Department to dept;
+
+ALTER TABLE Customers
+DROP COLUMN dept;
+
+DELETE  FROM Customers WHERE Customer_Address='France';
+-- TRUNCATE TABLE Customers;
+
+--SELECT * FROM customers WHERE customer_salary>10000;
+
