@@ -1,65 +1,93 @@
-create type status as enum ('shipping', 'on_delivery', 'delivered');
+DROP TABLE IF EXISTS OTT_Customers CASCADE;
 
-create table products
-(
-product_name varchar(200),
-summary text, 
-colors text[],
-brand varchar(40),
-price numeric(10,2),
-order_id uuid default gen_random_uuid(),
-delivery_status status default 'shipping',
-customer_info jsonb
+CREATE TABLE OTT_Customers (
+    customer_id SERIAL PRIMARY KEY,
+    customer_name VARCHAR(50),
+    country VARCHAR(50),
+    plan VARCHAR(20),
+    joining_date DATE DEFAULT NOW(),
+    monthly_revenue INT
 );
 
-insert into products(product_name, summary, colors, brand, price, delivery_status, customer_info)values
-(
-'Kettle',  'Electronic product', array['Red', 'Black', 'White'], 'Panasonic', 1000.200, 'delivered',
-'{ "name":"poojtha", "email":"bpoojitha312@gmail.com", "address":"Banglore, banasankari"}'
+INSERT INTO OTT_Customers(customer_name, country, plan, monthly_revenue)
+VALUES
+('Aarav Kumar',       'India',        'Basic',      1200),
+('Poojitha Bethu',    'India',        'Premium',    1500),
+('Yewanchu Lemo',     'China',        'Basic',      900),
+('Wang Lee',          'China',        'Premium',    1100),
+('Emma Watson',       'UK',           'Premium',    2000),
+('John Smith',        'USA',          'Basic',      1800),
+('Robert Brown',      'USA',          'Premium',    2200),
+('Sophia Müller',     'Germany',      'Basic',      1700),
+('Luca Rossi',        'Italy',        'Premium',    1300),
+('Chen Mei',          'China',        'Basic',      950),
+('Olivia Davis',      'USA',          'Premium',    2100);
 
-),
-(
-'Cooker',  'Electronic product', array['Red', 'Black', 'pink'], 'Panasonic', 5000.200, 'on_delivery',
-'{ "name":"vinoth", "email":"vinovino@gmail.com", "address":"Madurai, maharajanagar"}'
+DROP TABLE IF EXISTS subscriptions;
 
-),
-(
-'Active wear',  'Clothing product', array['green', 'Black', 'White'], 'puma', 1000.200, 'delivered',
-'{ "name":"sowmya", "email":"sowmya@gmail.com", "address":"Banglore, banasankari"}'
-
-),
-(
-'Joggers',  'Clothing product', array['Red', 'Black', 'White'], 'puma', 1000.200, 'delivered',
-'{ "name":"poojtha", "email":"bpoojitha312@gmail.com", "address":"Banglore, banasankari"}'
-
-),
-(
-'Shoes',  'foot wear', array['Red', 'Black', 'White'], 'bata', 1000.200, 'delivered',
-'{ "name":"poojtha", "email":"bpoojitha312@gmail.com", "address":"Banglore, banasankari"}'
-
-),
-(
-'Dry fruits',  'food product', array['Red', 'Black', 'White'], 'Panasonic', 1000, 'delivered',
-'{ "name":"poojtha", "email":"bpoojitha312@gmail.com", "address":"Banglore, banasankari"}'
-
+CREATE TABLE subscriptions (
+    subscription_id SERIAL PRIMARY KEY,
+    customer_id INT REFERENCES OTT_Customers(customer_id),
+    start_date DATE,
+    end_date DATE,
+    plan VARCHAR(20),
+    revenue INT
 );
 
-select * from products
-where brand in('puma', 'bata')
-order by price desc
-limit 3 ;
+INSERT INTO subscriptions(customer_id, start_date, end_date, plan, revenue)
+VALUES
+(1, '2025-01-01', '2025-12-31', 'Basic', 1200),
+(2, '2025-01-15', '2025-12-31', 'Premium', 1500),
+(3, '2025-02-01', '2025-12-31', 'Basic', 900),
+(4, '2025-02-10', '2025-12-31', 'Premium', 1100),
+(5, '2025-03-01', '2025-12-31', 'Premium', 2000),
+(6, '2025-01-20', '2025-12-31', 'Basic', 1800),
+(7, '2025-02-15', '2025-12-31', 'Premium', 2200),
+(8, '2025-03-05', '2025-12-31', 'Basic', 1700),
+(9, '2025-01-25', '2025-12-31', 'Premium', 1300),
+(10,'2025-02-20', '2025-12-31', 'Basic', 950),
+(11,'2025-03-10', '2025-12-31', 'Premium', 2100);
 
-select * from products
-where brand in('puma', 'bata')
-order by price desc
-limit 3 
-offset 1;
+SELECT * from OTT_Customers;
+--SELECT * from subscriptions;
+-- Basic Aggregations
 
+SELECT count(customer_id) as toatal_customers, sum(monthly_revenue) as total_revenue,
+avg(monthly_revenue) as average_revenue, max(monthly_revenue) as max_revenue,
+min(monthly_revenue) as min_revenue
+from OTT_Customers;
 
-select brand from products where summary like 'Electronic%';
+--  Intermediate Aggregations
 
+SELECT sum(monthly_revenue) as total_revenue, country from OTT_Customers
+GROUP BY country;
 
-select brand from products where brand in('puma', 'bata') and price between 500 and 1000;
+SELECT count(customer_id) as total_customer, plan from OTT_Customers
+GROUP BY plan;
 
+SELECT avg(monthly_revenue) as avg_revenue from OTT_Customers
+GROUP BY plan;
 
+--  Advanced
 
+SELECT count(customer_id) as total_customer, country from OTT_Customers
+GROUP BY country
+having count(customer_id)>2;
+
+SELECT avg(monthly_revenue) as total_revenue, plan FROM OTT_Customers
+group by plan
+having avg(monthly_revenue)>1500;
+
+SELECT sum(monthly_revenue) as total_revenue, country from OTT_Customers
+GROUP BY country 
+order by total_revenue DESC
+limit 3 offset 0;
+
+select sum(monthly_revenue) as total_revenue, customer_id from OTT_Customers
+GROUP BY customer_id  
+ORDER BY total_revenue DESC
+limit 5 offset 0;
+select sum(monthly_revenue) as total_revenue, customer_id from OTT_Customers
+GROUP BY customer_id  
+ORDER BY total_revenue DESC
+limit 5 offset 5;
